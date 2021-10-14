@@ -8,20 +8,46 @@ public class Solution
 
     public static void main(String... args)
     {
-      int t = 1;
-      t = sc.nextInt();
-      while (t-- > 0)
-      {
-          solve();
-      }
+      solve();
       out.close();
     }
 
+    public static boolean dp(int index, int[] arr, int val, HashMap<Integer, HashMap<Integer, Boolean>> map){
+
+      if(index == arr.length && val == 0) return true;
+      else if(index == arr.length && val != 0) return false;
+
+      if(map.containsKey(index) && map.get(index).containsKey(val)){
+         return map.get(index).get(val);
+      }
+
+        int addValue = val + arr[index] >= 360 ? (val  + arr[index] - 360 ) : val + arr[index];
+        int subValue = val - arr[index] <= -360 ? (val  - arr[index] + 360 ) : val - arr[index];
+        boolean ans = dp(index+1, arr, addValue, map) || dp(index+1, arr, subValue, map);
+
+      if(map.containsKey(index)){
+        HashMap<Integer,Boolean> m = map.get(index);
+        m.put(val, ans);
+      }else{
+        HashMap<Integer,Boolean> m = new HashMap<>();
+        m.put(val, ans);
+        map.put(index, m);
+      }
+      return ans;
+    }
     public static void solve()
     {
-       int s = sc.nextInt();
-       int a = sc.nextInt();
-       out.println(s+a);
+       int n = sc.nextInt();
+       int[] arr = new int[n];
+       for(int i = 0; i < n; i++){
+            arr[i] = sc.nextInt();
+       }
+
+       HashMap<Integer, HashMap<Integer, Boolean>> map = new HashMap<>();
+       boolean ans = dp(0, arr, 0, map);
+       out.println(ans ? "YES" : "NO");
+       
+       
     }
 
     public static long leftShift(long a){
