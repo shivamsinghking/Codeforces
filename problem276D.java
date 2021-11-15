@@ -1,28 +1,35 @@
 import java.io.*;
 import java.util.*;
 
-public class Solution
+public class Main
 {
     static PrintWriter out = new PrintWriter((System.out));
     static Kioken sc = new Kioken();
 
-    public static void main(String[] args)
+    public static void main(String... args)
     {
-      int t = 1;
-      t = sc.nextInt();
-      while (t-- > 0)
-      {
-          solve();
-      }
+      solve();
       out.close();
     }
 
+    
     public static void solve()
     {
-       int s = sc.nextInt();
-       int a = sc.nextInt();
-       out.println(s+a);
+       long a = sc.nextLong();
+       long b = sc.nextLong();
+      
+       int bit = 62;
+
+       while(bit >= 0 && (hasBit(a, bit) == hasBit(b, bit))){
+         bit--;
+       }
+
+       out.println(leftShift(bit+1)-1);
     }
+
+    public static boolean hasBit(long n, int pos) {
+      return (n & (1L << pos)) != 0;
+  }
 
     public static long leftShift(long a){
         return (long)Math.pow(2, a);

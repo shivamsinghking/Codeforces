@@ -19,9 +19,11 @@ public class Solution
 
     public static void solve()
     {
-       int s = sc.nextInt();
-       int a = sc.nextInt();
-       out.println(s+a);
+       int u = sc.nextInt();
+       int v = sc.nextInt();
+
+       out.println(u*(long)u + " " + -1*(v*(long)v));
+       
     }
 
     public static long leftShift(long a){

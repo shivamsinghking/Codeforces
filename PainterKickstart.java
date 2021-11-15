@@ -10,18 +10,73 @@ public class Solution
     {
       int t = 1;
       t = sc.nextInt();
-      while (t-- > 0)
-      {
-          solve();
+      for(int i = 1; i <= t; i++){
+        int cnt = solve();
+        out.println("Case #"+i+":" + " " + cnt);
       }
       out.close();
     }
 
-    public static void solve()
+    public static int solve()
     {
-       int s = sc.nextInt();
-       int a = sc.nextInt();
-       out.println(s+a);
+      int n = sc.nextInt();
+      String s = sc.nextLine();
+      char[][] arr = new char[n][3];
+
+      for(char i[]: arr){
+        Arrays.fill(i, 'z');
+      }
+      HashMap<Character,char[]> map = new HashMap<>();
+      map.put('R', new char[]{'R'});
+      map.put('B', new char[]{'B'});
+      map.put('Y', new char[]{'Y'});
+      map.put('U', new char[]{'U'});
+      map.put('O', new char[]{'R', 'Y'});
+      map.put('P', new char[]{'R', 'B'});
+      map.put('G', new char[]{'Y', 'B'});
+      map.put('A', new char[]{'Y','B','R'});
+
+      int len = s.length();
+      for(int i = 0; i < len; i++){
+        char c = s.charAt(i);
+        arr[i] = map.get(c);
+      }
+
+      // for(char[] i: arr){
+      //   out.println(Arrays.toString(i));
+      // }
+
+      char [] cc = { 'Y', 'B', 'R'};
+      int cnt = 0;
+      for(int i = 0; i < 3; i++){
+            char c = cc[i];
+            int v = 0;
+            for(int j = 0; j < arr.length; j++){
+               char[] a = arr[j];
+               if(check(a, c)){
+                   int k = j;
+                   v++;
+                   for(; k < arr.length; k++){
+                     char[] aa = arr[k];
+                     if(!check(aa, c)){
+                      break;
+                     }
+                   }
+                   j = k - 1;
+               }
+            }
+            cnt += v;
+      }
+  
+      return cnt;
+      // 
+    }
+
+    static boolean check(char[] arr, char c){
+      for(int i = 0; i < arr.length; i++){
+        if(arr[i] == c) return true;
+      }
+      return false;
     }
 
     public static long leftShift(long a){

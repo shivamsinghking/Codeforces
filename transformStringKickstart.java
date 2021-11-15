@@ -10,18 +10,42 @@ public class Solution
     {
       int t = 1;
       t = sc.nextInt();
-      while (t-- > 0)
-      {
-          solve();
+      for(int i = 1; i <= t; i++){
+        int cnt = solve();
+        out.println("Case #"+i+":" + " " + cnt);
       }
       out.close();
     }
 
-    public static void solve()
+    public static int solve()
     {
-       int s = sc.nextInt();
-       int a = sc.nextInt();
-       out.println(s+a);
+      String s = sc.nextLine();
+      String f = sc.nextLine();
+
+      int[] arr1 = new int[26];
+      
+      for(int i = 0; i < f.length(); i++){
+           arr1[f.charAt(i) - 'a']++;
+      }
+
+      int cnt = 0;
+      for(int i = 0 ; i < s.length(); i++){
+           char c = s.charAt(i);
+           if(arr1[c - 'a'] == 0){
+            
+            int diff = Integer.MAX_VALUE;
+            for(int j = 0; j < f.length(); j++){
+              int v = Math.abs(f.charAt(j) - c);
+              // out.println(v + " == " + c);
+              int m = Math.min(v, 26 - v);
+              diff = Math.min(diff, m);
+            }
+            // out.println(c + " " + diff);
+            cnt += diff;
+           }
+      }
+      return cnt;
+      // 
     }
 
     public static long leftShift(long a){

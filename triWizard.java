@@ -8,20 +8,57 @@ public class Solution
 
     public static void main(String[] args)
     {
-      int t = 1;
-      t = sc.nextInt();
-      while (t-- > 0)
-      {
-          solve();
+      int n = sc.nextInt();
+      int p = sc.nextInt();
+      int[][] arr = new int[p][2];
+      for(int i = 0; i < p; i++){
+        arr[i][0] = sc.nextInt();
+        arr[i][1] = sc.nextInt();
       }
+
+      int[] damage = new int[n];
+      for(int i = 0; i < n; i++){
+        damage[i] = sc.nextInt();
+      }
+
+      solve(n, p, arr, damage);
       out.close();
     }
 
-    public static void solve()
+    public static int min = Integer.MAX_VALUE;
+    public static void dp(int index, int[][] arr1, int[] d, int n, boolean[] visited, int val){
+      if(index > n-1) return ;
+      if(index == n-1){
+        min = Math.min(val, min);
+      };
+
+      visited[index] = true;
+      int ans = Integer.MAX_VALUE;
+      for(int i = 0; i < n; i++){
+        int next = arr1[index][i];
+        if(next > 0 && !visited[i]){
+          dp(i, arr1, d, n, visited, val + d[i]);
+        }
+      }
+  
+      visited[index] = false;
+      return;
+    }
+    public static void solve(int n, int p, int[][] arr, int[] d)
     {
-       int s = sc.nextInt();
-       int a = sc.nextInt();
-       out.println(s+a);
+      int[][] arr1 = new int[n+1][n+1];
+      // for(int[] i: arr1){
+      //   Arrays.fill(arr1, -1);
+      // }
+      for(int i = 0; i < p; i++){
+        int s = arr[i][0];
+        int e = arr[i][1];
+        arr1[s][e] = 1;
+      }
+
+      boolean[] visited = new boolean[n];
+      dp(0, arr1, d, n, visited, 0);
+      out.println(min == Integer.MAX_VALUE ? -1 : min);
     }
 
     public static long leftShift(long a){
