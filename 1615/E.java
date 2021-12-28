@@ -11,19 +11,139 @@ public class Main
     public static void main(String[] args)
     {
       int t = 1;
-      t = sc.nextInt();
-      while (t-- > 0)
-      {
-          solve();
-      }
+      solve();
+
       out.close();
     }
 
+    static class Tree{
+      List<Tree> child;
+      int vertices;
+      char color;
+
+      int lv = 0; // leaf_vertex_no.;
+      Tree(int vertices){
+        this.vertices = vertices;
+        color = 'w';
+        child = new ArrayList<>();
+      }
+    }
+    static int leafNode; 
     public static void solve()
     {
+          int n = sc.nextInt();
+          int k = sc.nextInt();
+          leafNode = 0;
+          int[][] arr = new int[n][2];
+          for(int i = 0; i < n - 1; i++){
+            arr[i][0] = sc.nextInt();
+            arr[i][1] = sc.nextInt();
+          }
 
+          Arrays.sort(arr, new Comparator<int[]>(){
+            public int compare(int[] a, int[] b){
+              return a[0] - b[0];
+            }
+          });
+
+          // make tree
+          HashMap<Integer,List<Integer>> map = new HashMap<>();
+          for(int i = 0; i < n; i++){
+              int u = arr[i][0];
+              int v = arr[i][1];
+              if(map.containsKey(u)){
+                List<Integer> l = map.get(u);
+                l.add(v);
+                map.put(u, l);
+              }else{
+                List<Integer> l = new ArrayList<>();
+                l.add(v);
+                map.put(u, l);
+              }
+          }
+
+          Tree t = new Tree(1);
+          fill(t, 1, map);
+
+          // We got the tree
+          out.println("leaf " + leafNode);
+          long max = Integer.MIN_VALUE;
+          for(int i = 0; i <= (int)(Math.pow(2,leafNode)-1); i++){
+               int[] x = travel(t, i);
+               int sb = 0;
+               int ii = i;
+               while(ii > 0){
+                 if((ii&1) == 1){
+                   sb++;
+                 }
+                 ii = ii >> 1;
+               }
+               if(sb > k) continue;
+               long ans = ((long)(n - (sb + x[1])))*((long)(sb - x[1]));
+               out.println( i + " " + x[1] + " " + sb + " " + ans);
+               max = Math.max(max, ans);
+          }
+
+          out.println(max);     
     }
 
+    // 1 = r; w = 0, b = -1
+    static int[] travel(Tree t, int binary){
+          if(t.child.size() == 0){
+             // it is leaf Node
+            //  out.println("binar " + binary + " ==> " + (binary&(1 << t.lv)));
+             if((binary&(1 << t.lv)) != 0){
+               // it is red;
+              //  t.color = 'r';
+              // color, not of white => as these white can be changed to blue;
+               return new int[]{1, 0};
+             }else{
+              //  t.color = 'w';
+               return new int[]{0, 1};
+             }
+          }
+
+
+          List<Tree> ch = t.child;
+          int total_nodes = 0;
+          int total_white = 0;
+          for(Tree tt : ch){
+             int[] x = travel(tt, binary);
+            //  out.println(" travel ==> " + tt.vertices + " " + tt.child.size() + " " + Arrays.toString(x));
+             if(x[0] == 0){
+               total_white++;
+             }
+             total_nodes += x[1];
+          }
+
+          // out.println(" total nodes " + total_nodes + " " + t.vertices + " " +  t.child.size());
+          if(total_white == ch.size()){
+            // every left and right is white only and this nodes also included
+            return new int[]{0, total_nodes+1};
+          }else{
+            return new int[]{1, total_nodes};
+          }
+    }
+    static void fill(Tree t, int r, HashMap<Integer,List<Integer>> map){
+
+      if(map.containsKey(r) == false){
+        // it is the leaf node
+        // out.println(r);
+        t.lv = leafNode;
+        leafNode++;
+        return;
+      }
+
+      List<Integer> l = map.get(r);
+      t.vertices = r;
+
+      for(int i: l){
+       Tree tt = new Tree(i);
+       fill(tt, i, map);
+       out.println(" fill " + tt.child.size() + " "  + i);
+       t.child.add(tt);
+      }
+    }
     static ArrayList<Long> prime_factors(long n) {
         ArrayList<Long> ans = new ArrayList<Long>();
         while (n % 2 == 0) {
@@ -105,7 +225,6 @@ public class Main
     static class Kioken
     {
         // FileInputStream br = new FileInputStream("input.txt");
-        
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer("");
 

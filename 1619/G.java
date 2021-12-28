@@ -18,10 +18,107 @@ public class Main
       }
       out.close();
     }
-
+ 
     public static void solve()
     {
+      int n = sc.nextInt();
+      int k = sc.nextInt();
 
+      int[] x = new int[n];
+      int [] y = new int[n];
+      int[] timer = new int[n];
+
+      List<int[]> ll = new ArrayList<>();
+      ll.add(new int[]{0, 0, 0});
+
+      HashMap<Integer,List<Integer>> mapx = new HashMap<>();
+      HashMap<Integer,List<Integer>> mapy = new HashMap<>();
+
+      for(int i = 0; i < n; i++){
+        x[i] = sc.nextInt();
+        y[i] = sc.nextInt();
+        timer[i] = sc.nextInt();
+        ll.add(new int[]{x[i], y[i], timer[i]});
+        // x, y , timer
+        
+        if(mapx.containsKey(x[i])){
+          List<Integer> l = mapx.get(x[i]);
+          l.add(i+1);
+          mapx.put(x[i], l);
+        }else{
+          List<Integer> l = new ArrayList<>();
+          l.add(i+1);
+          mapx.put(x[i], l);
+        }
+
+        if(mapy.containsKey(y[i])){
+          List<Integer> l = mapy.get(y[i]);
+          l.add(i+1);
+          mapy.put(y[i], l);
+        }else{
+          List<Integer> l = new ArrayList<>();
+          l.add(i+1);
+          mapy.put(y[i], l);
+        }
+      }
+
+      DSU dsu = new DSU(n+1, timer);
+      
+      for(Map.Entry<Integer,List<Integer>> m : mapx.entrySet()){
+        List<Integer> l = m.getValue();
+        l.sort((a, b) -> ll.get(a)[1] - ll.get(b)[1]);
+        for(int i = 1; i < l.size(); i++){
+          int v = l.get(i);
+          int u = l.get(i - 1);
+          if(Math.abs(ll.get(u)[1] - ll.get(v)[1]) <= k){
+              dsu.Union(u, v);
+          }
+        }
+      }
+
+      for(Map.Entry<Integer,List<Integer>> m : mapy.entrySet()){
+        List<Integer> l = m.getValue();
+        l.sort((a, b) -> ll.get(a)[0] - ll.get(b)[0]);
+        for(int i = 1; i < l.size(); i++){
+          int v = l.get(i);
+          int u = l.get(i - 1);
+          if(Math.abs(ll.get(u)[0] - ll.get(v)[0]) <= k){
+              dsu.Union(u, v);
+          }
+        }
+      }
+
+    //   out.println("---"  + dsu.parent[3] + " " + dsu.parent[1] + " "+ " " + dsu.parent[5]);
+
+     List<Integer> parent = new ArrayList<>();
+     for(int i = 1; i <= n; i++){
+       if(dsu.parent[i] == i){
+           parent.add(i);
+       }       
+      }
+
+      parent.sort((a, b) -> dsu.min_time[b] - dsu.min_time[a]);
+      // descending order of min_time
+
+    //   for(int i = 1; i <= n; i++){
+    //       out.println("");
+    //   }
+      // parent contain no. of component made
+      int t = 0;
+      int ans = 0;
+    //   out.println(" == " + parent);
+      for(int i : parent){
+        if(dsu.min_time[i] > t){
+            ans = t;
+            t++;
+        }else if(dsu.min_time[i] < t){
+            continue;
+        }else{
+            ans = t;
+        }
+      }
+
+      out.println(ans);
     }
 
     static ArrayList<Long> prime_factors(long n) {
@@ -105,7 +202,6 @@ public class Main
     static class Kioken
     {
         // FileInputStream br = new FileInputStream("input.txt");
-        
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer("");
 
@@ -306,15 +402,21 @@ public class Main
         }
     }
 
-    class DSU{
-        int[] parent, size;
+    static class DSU{
+        int[] parent, size, min_time;
         
-       DSU(int n){
+       DSU(int n, int[] time){
            parent = new int[n];
            size = new int[n];
+           min_time = new int[n];
+           
            for(int i = 0;i < n; i++){
                parent[i] = i;
                size[i] = 1;
+           }
+
+           for(int i = 0; i < time.length; i++){
+             min_time[i+1] = time[i];
            }
        }
        
@@ -334,9 +436,11 @@ public class Main
            if(size[parent_u] < size[parent_v]){
                parent[parent_u] = parent_v;
                size[parent_v]++;
+               min_time[parent_v] = Math.min(min_time[parent_u], min_time[parent_v]);
            }else{
                parent[parent_v] = parent_u;
                size[parent_u]++;
+               min_time[parent_u] = Math.min(min_time[parent_u], min_time[parent_v]);
            }
        }
    }

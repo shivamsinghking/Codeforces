@@ -1,4 +1,5 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 import javax.swing.text.Segment;
@@ -12,16 +13,60 @@ public class Main
     {
       int t = 1;
       t = sc.nextInt();
+
+    //   int[] zero = new int[64];
+    //   int[] one = new int[64];
+
+      int[][] mat = new int[2*100001][64];
+
+      for(int j = 1 ; j <= 2*100000; j++){
+        int index = 0;
+        int i = j;
+        int jj = 64;
+        
+        int[] zero;
+        zero = Arrays.copyOf(mat[j-1], mat[j-1].length);
+
+        int[] one = new int[64];
+        // out.println(jj);
+        while(jj-- > 0){
+          // out.println(jj);
+          // out.println(i + " == " );
+          if((i&1) == 0){
+            zero[index]++;
+          }else{
+            one[index]++;
+          }
+          index++;
+          i = i >> 1;
+        }
+        mat[j] = zero;
+    }  
+
       while (t-- > 0)
       {
-          solve();
+          solve(mat);
       }
       out.close();
     }
 
-    public static void solve()
+    public static void solve(int[][] mat)
     {
 
+    //   for(int i = 0; i < 4; i++){
+    //       out.println(Arrays.toString(mat[i]));
+    //   }
+      int l = sc.nextInt();
+      int r = sc.nextInt();
+
+    //   out.println(Arrays.toString(mat[l-1]) + " "  + Arrays.toString(mat[r]));
+      List<Integer> ll = new ArrayList<>();
+     for(int i  = 0; i < 64; i++){
+        ll.add(mat[r][i] - mat[l-1][i]);
+     }
+
+     ll.sort((a, b) -> a - b);
+     out.println(ll.get(0));
     }
 
     static ArrayList<Long> prime_factors(long n) {
@@ -105,7 +150,6 @@ public class Main
     static class Kioken
     {
         // FileInputStream br = new FileInputStream("input.txt");
-        
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer("");
 
