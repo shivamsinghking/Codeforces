@@ -10,18 +10,37 @@ public class Main
 
     public static void main(String[] args)
     {
-      int t = 1;
-      t = sc.nextInt();
-      while (t-- > 0)
-      {
-          solve();
-      }
+      solve();
+
       out.close();
     }
 
     public static void solve()
     {
 
+      int n = sc.nextInt();
+      int m = sc.nextInt();
+      DSU d = new DSU(n+1);
+
+      for(int i = 0; i < m;  i++){
+        int mm = sc.nextInt();
+        int lst = -1;
+        for(int j = 0; j < mm; j++){
+          int x = sc.nextInt();
+         if(lst != -1){
+           d.Union(lst, x);
+         }
+         lst = x;
+        }
+      }
+
+      for(int i = 1; i <= n; i++){
+        int a = d.findParent(i);
+        out.print(d.size[a] + " ");
+      }
+
+      out.println();
+      return;
     }
 
     static ArrayList<Long> prime_factors(long n) {
@@ -105,7 +124,6 @@ public class Main
     static class Kioken
     {
         // FileInputStream br = new FileInputStream("input.txt");
-        
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer("");
 
@@ -306,7 +324,7 @@ public class Main
         }
     }
 
-    class DSU{
+    static class DSU{
         int[] parent, size;
         
        DSU(int n){
@@ -333,10 +351,10 @@ public class Main
            // small attached to big, since we want to reduce overall size
            if(size[parent_u] < size[parent_v]){
                parent[parent_u] = parent_v;
-               size[parent_v]++;
+               size[parent_v] += size[parent_u];
            }else{
                parent[parent_v] = parent_u;
-               size[parent_u]++;
+               size[parent_u] += size[parent_v];
            }
        }
    }

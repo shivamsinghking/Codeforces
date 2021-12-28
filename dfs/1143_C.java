@@ -10,18 +10,60 @@ public class Main
 
     public static void main(String[] args)
     {
-      int t = 1;
-      t = sc.nextInt();
-      while (t-- > 0)
-      {
-          solve();
-      }
+      solve();
+
       out.close();
     }
 
     public static void solve()
     {
+        int n = sc.nextInt();
+        int[] arr = new int[n+1];
+        for(int i = 0; i <= n; i++){
+          arr[i] = i;
+        }
 
+        int[] parent = new int[n+1];
+        int[] respect = new int[n+1];
+        for(int i = 1; i <= n; i++){
+          int u = sc.nextInt();
+          int c = sc.nextInt();
+          // 0 res , 1 not res
+
+          parent[i] = u;
+          respect[i] = c;
+        }
+
+        boolean[] deleted = new boolean[n+1];
+        Arrays.fill(deleted, false);
+        for(int i = 1; i <=n; i++){
+          int p = parent[i];
+          if(p == -1){
+            continue;
+          }
+          if(respect[i] == 0){
+            // it parent can't be delted
+            deleted[p] = deleted[p] || true;
+          }else{
+            deleted[p] =  deleted[p] || false;
+          }
+        }
+
+        boolean flag = false;
+        for(int i = 1; i <= n; i++){
+          if(parent[i] == -1){
+            continue;
+          }else{
+            if(!deleted[i] && respect[i] == 1){
+              flag = true;
+              out.print(i + " ");
+            }
+          }
+        }
+        if(!flag){
+          out.print(-1);
+        }
+        out.println();
     }
 
     static ArrayList<Long> prime_factors(long n) {
@@ -105,7 +147,6 @@ public class Main
     static class Kioken
     {
         // FileInputStream br = new FileInputStream("input.txt");
-        
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer("");
 

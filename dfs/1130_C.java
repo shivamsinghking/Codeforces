@@ -11,17 +11,76 @@ public class Main
     public static void main(String[] args)
     {
       int t = 1;
-      t = sc.nextInt();
-      while (t-- > 0)
-      {
-          solve();
-      }
+      solve();
+
       out.close();
     }
 
+    static boolean isValid(String[] arr, int r, int c, int n){
+      // out.println(" r " + r+ " " + c);
+      if(r < 0 || c < 0 || r >= n || c >= n || arr[r].charAt(c) == '1'){
+        return false;
+      }
+      return true;
+    }
+
+    static long max = Integer.MAX_VALUE;
+    static void dfs(int r, int c, int r1, int c1, boolean[][] visited, String[] arr){
+
+      long sum = (long)(r - r1)*(r - r1) + (long)(c - c1)*(c - c1);
+      max = Math.min(max, sum);
+      // out.println(" r " + r + " " + r1 +  " - " + c + " " + c1);
+      int[] x = {1, -1, 0, 0};
+      int[] y = {0, 0, 1, -1};
+
+      for(int i = 0; i < 4; i++){
+        int nx = r + x[i];
+        int ny = c + y[i];
+        if(isValid(arr, nx, ny, visited.length) && !visited[nx][ny]){
+          visited[nx][ny] = true;
+          dfs(nx, ny, r1, c1, visited, arr);
+        }
+      }
+    }
+
+    static void dfs2(int r1, int c1, int r, int c, boolean[][] visited, String[] arr){
+      int[] x = {1, -1, 0, 0};
+      int[] y = {0, 0, 1, -1};
+
+      boolean[][] visited2 = new boolean[visited.length][visited.length];
+      dfs(r1, c1, r, c, visited2, arr);
+
+      for(int i = 0; i < 4; i++){
+        int nx = r+x[i];
+        int ny = c+y[i];
+        // out.println(" xx " + nx  + " " + ny + " ");
+        if(isValid(arr, nx, ny, visited.length) && !visited[nx][ny]){
+          visited[nx][ny] = true;
+          dfs2(r1, c1, nx, ny, visited, arr); 
+        }
+      }
+
+    }
     public static void solve()
     {
+       int n = sc.nextInt();
+       int r1 = sc.nextInt();
+       int c1 = sc.nextInt();
+       int r2 = sc.nextInt();
+       int c2 = sc.nextInt();
 
+       String[] arr = new String[n];
+       for(int i = 0; i < n; i++){
+         arr[i] = sc.nextLine();
+       }
+ 
+
+       boolean[][] visited = new boolean[n][n];
+       visited[r2-1][c2-1] = true;
+       dfs2(r1-1, c1-1, r2-1, c2-1, visited, arr);
+
+       out.println(max);
+       
     }
 
     static ArrayList<Long> prime_factors(long n) {
@@ -105,7 +164,6 @@ public class Main
     static class Kioken
     {
         // FileInputStream br = new FileInputStream("input.txt");
-        
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer("");
 

@@ -21,7 +21,41 @@ public class Main
 
     public static void solve()
     {
+       int n = sc.nextInt();
+       int[] arr = new int[n];
+       long sum = 0L;
+       for(int i = 0; i < n; i++){
+         arr[i] = sc.nextInt();
+         sum += arr[i];
+       }
 
+    //    double d = sum/Double.valueOf(n);
+       
+    //    if(d%(1.0) == 0){
+    //        out.println(0);
+    //    }else{
+    //        out.println(1);
+    //    }
+
+       int k = 1000;
+       while(k-- > 0){
+           int min = arr[0];
+           int max = arr[n - 1];
+
+           int mid = (max+min)/2;
+           if((max - min)%2 == 0){
+                max = mid;
+                min = mid;
+           }else{
+               max = mid+1;
+               min = mid;
+           }
+           arr[0] = min;
+           arr[n - 1] = max;
+           Arrays.sort(arr);
+       }
+
+       out.println(arr[n-1] - arr[0]);
     }
 
     static ArrayList<Long> prime_factors(long n) {
@@ -105,7 +139,6 @@ public class Main
     static class Kioken
     {
         // FileInputStream br = new FileInputStream("input.txt");
-        
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer("");
 

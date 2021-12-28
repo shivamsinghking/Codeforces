@@ -1,5 +1,8 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.swing.text.Segment;
 
@@ -11,17 +14,73 @@ public class Main
     public static void main(String[] args)
     {
       int t = 1;
-      t = sc.nextInt();
-      while (t-- > 0)
-      {
-          solve();
-      }
+      solve();
+
       out.close();
     }
 
+    static int[][] mat;
+    static boolean isValid(int n, int r, int c){
+      if(r < 0 || c < 0 || r >= n || c >= n || mat[r][c] != 0){
+        return false;
+      }
+      return true;
+    }
+
+    static int p = 0;
+    public static void dfs(int n, int r, int c, int val){
+         
+      // right => down
+      // mat[r][c] = val;
+      // out.println(p + " " + r  + " " + c);
+      if(p == 0) return;
+      
+      // right
+      if(isValid(n, r, c-1)){
+        mat[r][c-1] = val;
+        p--;
+        dfs(n, r, c - 1, val);
+      }
+      
+      if(isValid(n, r+1, c) && p != 0){
+        mat[r+1][c] = val;
+        p--;
+        dfs(n, r+1, c , val);
+      }
+      return;
+    }
     public static void solve()
     {
+        int n = sc.nextInt();
+        mat = new int[n][n];
+        // int[] arr = new int[n];
+        IntStream.range(0, n).forEach((x) -> mat[x][x] = sc.nextInt());
+        
 
+        
+        for(int i = 0; i < n; i++){
+          p = mat[i][i] - 1;
+          // out.println(" --> " + i  + " "  + p);
+          dfs(n, i, i, mat[i][i]);
+          // out.println(" --> " + i  + " "  + p);
+          if(p != 0){
+            out.println(-1);
+            return;
+          }
+
+          // for(int[] j: mat){
+          //   out.println(Arrays.toString(j));
+          //  }
+        }
+
+        for(int i = 0; i < n; i++){
+          for(int j = 0; j <= i; j++){
+            out.print(mat[i][j] + " ");
+          }
+          out.println();
+        }
+
+        return;
     }
 
     static ArrayList<Long> prime_factors(long n) {
@@ -105,7 +164,6 @@ public class Main
     static class Kioken
     {
         // FileInputStream br = new FileInputStream("input.txt");
-        
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer("");
 
