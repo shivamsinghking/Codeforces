@@ -25,73 +25,54 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
-        }
-
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }
-    }
     public static void solve() {
        int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
+       String s = sc.nextLine();
+       
 
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
+       HashMap<Integer,HashMap<Integer,Integer>> map = new HashMap<>();
+
+       int[] prefix_d = new int[n];
+       int[] prefix_k = new int[n];
        for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
-           }
+         if(s.charAt(i) == 'D'){
+           prefix_d[i] = (i == 0) ? 1 : prefix_d[i-1] + 1;
+           prefix_k[i] =  (i == 0) ? 0 : prefix_k[i-1];
+         }else{
+           prefix_k[i] = (i == 0) ? 1: prefix_k[i-1] + 1;
+           prefix_d[i] = (i == 0) ? 0: prefix_d[i-1];
+         }
        }
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
+      //  out.println(" === " + s.length());
+       for(int i = 0; i < n; i++){
+         int val = (int)gcd(prefix_d[i], prefix_k[i]);
+        //  out.println(" val " + val + " "  + prefix_d[i] + " " + prefix_k[i]);
+         int ratio_d = prefix_d[i]/val;
+         int ratio_k = prefix_k[i]/val;
+        //  out.println(" ra " + ratio_d + " " + ratio_k);
+         if(map.containsKey(ratio_d)){
+          //  out.println(" --->>> " + map.get(ratio_d).keySet());
+            if(map.get(ratio_d).containsKey(ratio_k)){
+              HashMap<Integer,Integer> m = map.get(ratio_d);
+              m.put(ratio_k, m.get(ratio_k)+1);
+              // out.println(" == " + m.get);
+              map.put(ratio_d, m);
+              out.print(m.get(ratio_k) + " ");
+            }else{
+              HashMap<Integer,Integer> m = map.get(ratio_d);
+              m.put(ratio_k, 1);
+              map.put(ratio_d, m);
+              out.print(m.get(ratio_k) + " ");
+            }
+         }else{
+           HashMap<Integer,Integer> m = new HashMap<>();
+           m.put(ratio_k, 1);
+           map.put(ratio_d, m);
+           out.print(m.get(ratio_k) + " ");
+         }
        }
+       out.println();
     }
 
     public static long gcd(long a,long b)

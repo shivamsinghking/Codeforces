@@ -25,73 +25,76 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
+    static boolean isValid(int i, int j, int n, int m){
+      if(i < 0 || j  < 0 || i >= n || j >= m){
+        return false;
+      }
+      return true;
+    }
+
+    static int findMaxD(char[][] arr, int i, int j, int n, int m, int dd){
+      // out.println(" i + j "   + i + " "  + j + " "  + " " + isValid(i, j, n, m));
+      if(!isValid(i, j, n, m)){
+        return 0;
+      }
+      if(arr[i][j] == '.'){
+        return 0;
+      }
+
+      // go diagonally, dd => -1, 1
+      // out.println(" i + j "   + i + " "  + j);
+      return 1 + findMaxD(arr, i-1, j+dd, n, m, dd);
+    }
+
+    static void fill(boolean[][] visited, int i, int j, int d, int n, int m, int dd){
+        if(d <= 0) return ;
+        if(!isValid(i, j, n, m)){
+          return;
         }
 
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }
+        visited[i][j] = true;
+        fill(visited, i-1, j+dd, d-1, n, m, dd);
     }
+
     public static void solve() {
        int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
+       int m = sc.nextInt();
+       int k = sc.nextInt();
 
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
+       char[][] arr = new char[n][m];
        for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
-           }
+         char[] s = sc.nextLine().toCharArray();
+         for(int j = 0; j < m; j++){
+           arr[i][j] = s[j];
+         }
        }
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
+      boolean[][] visited = new boolean[n][m];
+
+       for(int i = n - 1; i >= 0; i--){
+         for(int j = 0; j < m; j++){
+           if(arr[i][j] == '*'){
+             // this can be a center
+             int minD  = Math.min(findMaxD(arr, i, j, n, m, 1), findMaxD(arr, i, j, n, m, -1)) - 1;
+            //  out.println(" min " + minD + " " + i + " " + j);
+             if(minD > 0 && minD >= k){
+               fill(visited, i, j, minD+1, n, m, 1);
+               fill(visited, i, j, minD+1, n, m, -1);
+             }
+           }
+         }
        }
+
+       for(int i = 0; i < n; i++){
+         for(int j = 0; j < m; j++){
+           if(arr[i][j] == '*' && !visited[i][j]){
+             out.println("NO");
+             return;
+           }
+         }
+       }
+       out.println("YES");
+       return;
     }
 
     public static long gcd(long a,long b)
@@ -110,7 +113,7 @@ public class Main {
     public static void reverse(int[] arr) {
         Arrays.sort(arr);
         int n = arr.length;
-        for (int i = 0; i < arr.length/2; i++) {
+        for (int i = 0; i < arr.length; i++) {
             int temp = arr[i];
             arr[i] = arr[n - 1 - i];
             arr[n - 1 - i] = temp;

@@ -25,84 +25,71 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
-        }
+    static int[][] mat;
+    static int[][] ans;
+    static void find(int l, int r){
 
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
+        if(l >= r){
+            ans[l][r] = l;
+            return;
+        }
+        //  finding all possible breakdown
+        for(int i = l; i <= r; i++){
+            if(i == l){
+              int l1 = i+1;
+              int r1 = r;
+              if(mat[l1][r1] == 1){
+                ans[l][r] = l;
+                find(l1, r1);
+                return;
+              }
+            }else if(i == r){
+                int l1 = l;
+                int r1 = r-1;
+                if(mat[l1][r1] == 1){
+                    ans[l][r] = r;
+                    find(l1, r1);
+                    return;
+                }
             }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
+                int l1 = l;
+                int r1 = i - 1;
+                int l2 = i+1;
+                int r2 = r;
+                if(mat[l1][r1] == 1 && mat[l2][r2] == 1){
+                    ans[l][r] = i;
+                    find(l1, r1);
+                    find(l2, r2);
+                    return;
+                }
             }
         }
     }
     public static void solve() {
        int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
-
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
+       mat = new int[1001][1001];
+       ans = new int[1001][1001];
+       List<int[]> ll = new ArrayList<>();
+       int[][] arr = new int[n][2];
        for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
-           }
+           int l = sc.nextInt();
+           int r = sc.nextInt();
+           arr[i][0] = l;
+           arr[i][1] = r;
+           mat[l][r] = 1;
        }
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
+       find(1, n);
+
+
+       for(int i = 0; i < n; i++){
+           int l = arr[i][0];
+           int r = arr[i][1];
+           out.println(l + " " + r + " " + ans[l][r]);
        }
+
     }
 
-    public static long gcd(long a,long b)
-    {  while(b!=0)
-        {long rem=a%b;
-         a=b;
-         b=rem;
-        }
-        return a;
-    }
-    
     public static long leftShift(long a) {
         return (long) Math.pow(2, a);
     }
@@ -110,7 +97,7 @@ public class Main {
     public static void reverse(int[] arr) {
         Arrays.sort(arr);
         int n = arr.length;
-        for (int i = 0; i < arr.length/2; i++) {
+        for (int i = 0; i < arr.length; i++) {
             int temp = arr[i];
             arr[i] = arr[n - 1 - i];
             arr[n - 1 - i] = temp;

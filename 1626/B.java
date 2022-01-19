@@ -25,72 +25,60 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
-        }
-
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }
-    }
     public static void solve() {
-       int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
+       String x = sc.nextLine();
 
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
-       for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
+       boolean isTwo = false;
+       for(int i = 1; i < x.length(); i++){
+           int a = x.charAt(i-1) - '0';
+           int b = x.charAt(i) - '0';
+           if(a+b > 9){
+               isTwo = true;
+               break;
            }
        }
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
+       int n = x.length();
+    //    out.println(" t " +isTwo);
+       if(isTwo){
+           for(int i = n - 2; i >= 0; i--){
+               int a = x.charAt(i) - '0';
+               int b = x.charAt(i+1) - '0';
+               if(a+b > 9){
+                  String ans = "";
+                  if(i > 0){
+                      ans += x.substring(0, i);
+                  }
+
+                  ans += String.valueOf(a+b);
+
+                  if(i+2 < n){
+                      ans += x.substring(i+2, n);
+                  }
+                  out.println(ans);
+                  return;
+               }
+           }
        }else{
-           out.println(ans);
+           for(int i = 1; i < n; i++){
+            int a = x.charAt(i) - '0';
+            int b = x.charAt(i-1) - '0';
+            if(a+b <= 9){
+                String ans = "";
+                if(i-1 > 0){
+                    ans += x.substring(0, i-1);
+                }
+
+                ans += String.valueOf(a+b);
+
+                // out.println("--- " + ans);
+                if(i+1 < n){
+                    ans += x.substring(i+1, n);
+                }
+                out.println(ans);
+                return;
+            }
+           }
        }
     }
 

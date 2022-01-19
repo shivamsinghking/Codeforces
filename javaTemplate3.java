@@ -29,6 +29,15 @@ public class Main {
        
     }
 
+    public static long gcd(long a,long b)
+    {  while(b!=0)
+        {long rem=a%b;
+         a=b;
+         b=rem;
+        }
+        return a;
+    }
+    
     public static long leftShift(long a) {
         return (long) Math.pow(2, a);
     }
@@ -36,7 +45,7 @@ public class Main {
     public static void reverse(int[] arr) {
         Arrays.sort(arr);
         int n = arr.length;
-        for (int i = 0; i < arr.length; i++) {
+        for (int i = 0; i < arr.length/2; i++) {
             int temp = arr[i];
             arr[i] = arr[n - 1 - i];
             arr[n - 1 - i] = temp;

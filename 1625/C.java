@@ -16,82 +16,54 @@ public class Main {
             sc = new Kioken();
         }
 
-        int tt = 1;
-        tt = sc.nextInt();
-        while (tt-- > 0) {
-            solve();
-        }
+        solve();
+
         out.flush();
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
-        }
-
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }
-    }
     public static void solve() {
        int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
-
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
+       int l = sc.nextInt();
+       int k = sc.nextInt();
+       int[] coor = new int[n+1];
+       int[][] store = new int[n+1][k+1];
        for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
+         coor[i] = sc.nextInt();
+       }
+       coor[n] = l;
+
+       for(int[] i: store){
+           Arrays.fill(i, Integer.MAX_VALUE);
+       }
+       int[] time = new int[n+1];
+       for(int i = 0; i <n; i++){
+         time[i] = sc.nextInt();
+       }
+       time[n] = -1;
+
+       for(int i = 0; i <= k; i++){
+           store[0][i] = 0;
+       }
+       for(int i = 0; i <= n; i++){
+           for(int j = 0; j <= k; j++){
+               int jump = 0;
+               for(int m = i+1; m <= n; m++){
+                 if(j+jump > k){
+                     break;
+                 }
+                 int val = (coor[m] - coor[i])*(time[i]);
+                //  out.println(" i " + i + " " + j + " " + store[i][j]);
+                 store[m][jump+j] = Math.min(store[m][jump+j], store[i][j] + val);
+                 jump++;
+               }
            }
        }
-
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
+       int ans = Integer.MAX_VALUE;
+       for(int i = 0; i <= k; i++){
+        ans = Math.min(ans, store[n][i]);
        }
+       out.println(ans);
     }
 
     public static long gcd(long a,long b)

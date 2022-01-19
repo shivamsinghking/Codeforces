@@ -25,73 +25,29 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
-        }
-
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }
-    }
     public static void solve() {
-       int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
+       int r = sc.nextInt();
+       int c = sc.nextInt();
+    //    int[][] arr = new int[r][c];
+       List<Integer> ll = new ArrayList<>();
 
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
-       for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
+       
+       for(int i = 0; i < r; i++){
+           for(int j = 0; j < c; j++){
+               // check for all corners
+               int v1 = Math.abs(i - 0)  + Math.abs(j - 0);
+               int v2 = Math.abs(i - 0) + Math.abs(j - (c - 1));
+               int v3 = Math.abs(i - (r - 1)) + Math.abs(j - (0));
+               int v4 = Math.abs(i - (r - 1)) + Math.abs(j - (c - 1));
+               int max = Math.max(v1, Math.max(v2, Math.max(v3, v4)));
+               ll.add(max);
            }
        }
-
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
+       ll.sort((a, b) -> a - b);
+       for(int i: ll){
+           out.print(i + " ");
        }
+       out.println();
     }
 
     public static long gcd(long a,long b)

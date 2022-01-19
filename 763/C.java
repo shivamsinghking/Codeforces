@@ -1,6 +1,8 @@
 import java.io.*;
 import java.util.*;
 
+import javax.sound.midi.MidiChannel;
+
 public class Main {
     static PrintWriter out;
     static Kioken sc;
@@ -25,84 +27,54 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
-        }
+    static boolean bs(int[] arr, int a){
+    
+      // out.println(" mid1 "  + Arrays.toString(arr) + " " + a);
 
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
+      int[] curr = Arrays.copyOf(arr, arr.length);
+     for(int i = arr.length - 1; i >= 2; i--){
+       if(arr[i] < a){
+         return false;
+       }
+       int min = Math.min(arr[i] - a, curr[i]);
+       min = min/3;
+       arr[i] -= 3*min;
+       arr[i - 1] += min;
+       arr[i-2] += 2*min;
+     }
+
+      for(int i: arr){
+        if(i < a){
+          return false;
         }
+      }
+      return true;
     }
     public static void solve() {
        int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
-
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
+       int[] arr = new int[n];
+       int max = Integer.MIN_VALUE;
        for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
-           }
+         arr[i] = sc.nextInt();
+         max = Math.max(max, arr[i]);
        }
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
+       int l = 0, r = max, ans = 0;
+       while(l <= r){
+         int mid = (l+r)/2;
+        //  out.println(" l r " + l + " " + r);
+         int[] aa = Arrays.copyOf(arr, arr.length);
+         if(bs(aa, mid)){
+          // out.println(Arrays.toString(arr) + " " + Arrays.toString(aa) + " mid "  + mid );
+            ans = mid;
+            l = mid+1;
+         }else{
+           r = mid-1;
+         }
        }
+       out.println(ans);
     }
 
-    public static long gcd(long a,long b)
-    {  while(b!=0)
-        {long rem=a%b;
-         a=b;
-         b=rem;
-        }
-        return a;
-    }
-    
     public static long leftShift(long a) {
         return (long) Math.pow(2, a);
     }
@@ -110,7 +82,7 @@ public class Main {
     public static void reverse(int[] arr) {
         Arrays.sort(arr);
         int n = arr.length;
-        for (int i = 0; i < arr.length/2; i++) {
+        for (int i = 0; i < arr.length; i++) {
             int temp = arr[i];
             arr[i] = arr[n - 1 - i];
             arr[n - 1 - i] = temp;

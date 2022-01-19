@@ -25,73 +25,63 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
+    static boolean checkOverlap(int s1, int e1, int s2, int e2){
+        if(s2 >= s1 && s2 <= e1){
+            return true;
         }
 
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
+        if(s1 >= s2 && s1 <= e2){
+            return true;
         }
+
+        return false;
     }
     public static void solve() {
-       int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
+       
+        int n = sc.nextInt();
+        int[] kk = new int[n];
+        int[] hh = new int[n];
+        for(int i = 0; i < n; i++){
+            kk[i] = sc.nextInt();
+        }
+        for(int i = 0; i < n; i++){
+            hh[i] = sc.nextInt();
+        }
 
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
-       for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
-           }
-       }
+        int[][] arr = new int[n][2];
+        for(int i = 0; i < n; i++){
+            int e = kk[i];
+            int s = kk[i] - (hh[i] - 1);
+            arr[i][0] = s;
+            arr[i][1] = e;
+        }
+        Arrays.sort(arr, (a, b) -> a[0] - b[0]);
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
-       }
+        int start = arr[0][0], end = arr[0][1];
+        List<int[]> ll = new ArrayList<>();
+
+        for(int i = 1; i < n; i++){
+            boolean isOverlap = checkOverlap(start, end, arr[i][0], arr[i][1]);
+            // out.println(Arrays.toString(arr[i]) + " ===  "  + Arrays.toString(arr[i-1]) + " "  + isOverlap + " " + start + " " + end);
+            if(isOverlap){
+                start = Math.min(start, Math.min(arr[i-1][0], arr[i][0]));
+                end = Math.max(end, Math.max(arr[i-1][1], arr[i][1]));
+            }else{
+               ll.add(new int[]{start, end});
+               start = arr[i][0];
+               end =  arr[i][1];
+            }
+        }
+        ll.add(new int[] {start, end});
+
+        long sum = 0L;
+        for(int i = 0; i < ll.size(); i++){
+            int[] ans = ll.get(i);
+            int nn = ans[1] - ans[0] + 1;
+            long val = (long)(nn)*((long)(nn+1))/2; 
+            sum += val;
+        }
+        out.println(sum);
     }
 
     public static long gcd(long a,long b)

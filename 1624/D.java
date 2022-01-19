@@ -25,73 +25,100 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
-        }
+    static boolean bs(long even, long odd, long val, int k){
+      // min palindrom is poss or not
 
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }
+      // out.println(" Mid " + val + " " + even + " " + odd);
+      // if(val%2 == 0){
+      //   even = even - val;
+      // }else{
+      //   even = even - val + 1;
+      //   odd--;
+      // }
+
+      // val++;
+      // out.println(" mid == " + val + " "  + even + " " + odd + " " + k);
+      for(int i = 0; i < k; i++){
+         if(val%2 == 0){
+           if(even >= val){
+             even = even - val;
+           }else{
+             return false;
+           }
+         }else{
+           if(odd > 0){
+             if(even >= val - 1){
+               even = even - val +1;
+               odd--;
+             }else{
+               return false;
+             }
+           }else{
+             if(even >= val){
+               even = even - val;
+             }else{
+               return false;
+             }
+           }
+         }
+        //  val++;
+      }
+
+      return true;
     }
     public static void solve() {
        int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
+       int k = sc.nextInt();
+       String s = sc.nextLine();
+       int[] arr = new int[26];
+       for(int x: s.toCharArray()){
+         arr[x - 'a']++;
+       }
 
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
-       for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
+       List<Integer> even = new ArrayList<>();
+       List<Integer> odd = new ArrayList<>();
+
+       for(int i = 0; i < 26; i++){
+         if(arr[i] > 0){
+           if(arr[i]%2 == 0){
+             even.add(arr[i]);
            }else{
-               arr[3]++;
+             if(arr[i] > 1){
+               odd.add(1);
+               even.add(arr[i]-1);
+             }else{
+               odd.add(1);
+             }
            }
+         }
        }
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
-       }
+      long sum_even = 0L;
+      for(long x: even){
+        sum_even += x;
+      }
+
+      long sum_odd = 0L;
+      for(long x: odd){
+        sum_odd += x;
+      }
+
+      long r = sum_even + 1;
+      long l = 1;
+
+      long ans = 1;
+      while(l <= r){
+        long mid = (r+l)/2;
+        // out.println("Mid ---- " + mid + " " + l + " " + r);
+        if(bs(sum_even, sum_odd, mid, k)){
+           ans = mid;
+          //  out.println(" mid " + mid);
+           l = mid+1;
+        }else{
+          r = mid - 1;
+        }
+      }
+      out.println(ans);
     }
 
     public static long gcd(long a,long b)

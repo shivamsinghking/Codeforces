@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         boolean t = true;
         boolean f = false;
-        if (f) {
+        if (t) {
             out = new PrintWriter("output.txt");
             sc = new Kioken("input.txt");
         } else {
@@ -25,73 +25,68 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
+    public static long getVal(List<Integer> pp, boolean isLeft, int k){
+      long sum_pos = 0L;
+      long last = 0L;
+      for(int i = 0; i < pp.size(); i++){
+        int kk = k-1;
+        int prev = pp.get(i);
+        sum_pos += prev;
+        if(kk > 0){
+          i++;
         }
+        for(; i < pp.size() && kk > 0; i++, kk--){
+          sum_pos += (pp.get(i) - prev);
+          prev = pp.get(i);
+        }
+        sum_pos += prev;
+        out.println("sum ==> " + sum_pos + " " + pp);
+        if(i >= pp.size() - 1){
+          last = prev;
+        }
+      }
 
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }
+      // out.println(" -->>last "  + last);
+      return sum_pos + ((isLeft == false) ? (-1*last) : 0);
     }
     public static void solve() {
        int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
+       int k = sc.nextInt();
 
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
+       int[] arr = new int[n];
+      //  HashMap<Integer,Integer> pos = new HashMap<>();
+      //  HashMap<Integer,Integer> neg = new HashMap<>();
+
+       List<Integer> pp = new ArrayList<>();
+       List<Integer> nn = new ArrayList<>();
        for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
-           }
+         arr[i] = sc.nextInt();
+         if(arr[i] >= 0){
+           pp.add(arr[i]);
+          //  if(pos.containsKey(arr[i])){
+          //    pos.put(arr[i], pos.get(arr[i])+1);
+          //  }else{
+          //    pos.put(arr[i], 1);
+          //  }
+         }else{
+           nn.add(-1*arr[i]);
+          //  if(neg.containsKey(arr[i])){
+          //    neg.put(arr[i], neg.get(arr[i])+1);
+          //  }else{
+          //    neg.put(arr[i], 1);
+          //  }
+         }
        }
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
-       }
+       Collections.sort(pp);
+       Collections.sort(nn);
+
+       long sum_pos = getVal(pp, nn.size() > 0 ? true: false, k);
+       long sum_ng = getVal(nn, false, k);
+
+      //  out.println(" -- " + sum_pos);
+       out.println(sum_ng + sum_pos);
+      
     }
 
     public static long gcd(long a,long b)

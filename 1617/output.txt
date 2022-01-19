@@ -1,7 +1,8 @@
-aaaacbb
-abccc
-aaacccbbd
-aaaaacbbdrr
-dddddddddddd
-bbc
-ac
+1
+-1
+0
+-1
+1
+1
+1
+4

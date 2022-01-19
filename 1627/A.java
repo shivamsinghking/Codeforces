@@ -25,73 +25,52 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
-        }
-
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }
-    }
     public static void solve() {
-       int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+        int r = sc.nextInt()-1;
+        int c = sc.nextInt()-1;
 
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
-       for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
+        char[][] arr = new char[n][m];
+        boolean flag = false;
+        for(int i = 0; i < n; i++){
+           char[] s = sc.nextLine().toCharArray();
+
+           for(int j = 0;j < m; j++){
+               arr[i][j] = s[j];
+               if(arr[i][j] == 'B'){
+                   flag = true;
+               }
            }
-       }
+        }
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
-       }
+        if(!flag){
+            out.println(-1);
+            return;
+        }
+
+        if(arr[r][c] == 'B'){
+            out.println(0);
+            return;
+        }
+
+        //  along row
+        for(int i = 0; i < m; i++){
+         if(arr[r][i] == 'B'){
+             out.println(1);
+             return;
+         }
+        }
+
+        for(int i = 0; i < n; i++){
+            if(arr[i][c] == 'B'){
+                out.println(1);
+                return;
+            }
+        }
+
+        // row && col.
+        out.println(2);
     }
 
     public static long gcd(long a,long b)

@@ -25,84 +25,39 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
-        }
-
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }
-    }
     public static void solve() {
-       int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
+       int r = sc.nextInt();
+       int c = sc.nextInt();
+       int ri = sc.nextInt()-1;
+       int ci = sc.nextInt()-1;
+       int rf = sc.nextInt()-1;
+       int cf = sc.nextInt()-1;
 
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
-       for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
-           }
+       int[][] arr = new int[r][c];
+
+       arr[ri][ci] = 1;
+
+       int dr = 1, dc = 1, cnt = 0;
+       while(ri != rf && ci != cf){
+         if(ri + dr >= r || (ri + dr) < 0){
+           dr  = (dr == -1 ) ? 1 : -1;
+         }
+         if(ci + dc >= c || (ci + dc) < 0){
+           dc = (dc == -1) ? 1 : -1;
+         }
+         ri += dr;
+         ci += dc;
+         arr[ri][ci] =  1;
+
+         cnt++;
        }
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
-       }
+      //  for(int[] i: arr){
+      //    out.println(Arrays.toString(i));
+      //  }
+       out.println(cnt);
     }
 
-    public static long gcd(long a,long b)
-    {  while(b!=0)
-        {long rem=a%b;
-         a=b;
-         b=rem;
-        }
-        return a;
-    }
-    
     public static long leftShift(long a) {
         return (long) Math.pow(2, a);
     }
@@ -110,7 +65,7 @@ public class Main {
     public static void reverse(int[] arr) {
         Arrays.sort(arr);
         int n = arr.length;
-        for (int i = 0; i < arr.length/2; i++) {
+        for (int i = 0; i < arr.length; i++) {
             int temp = arr[i];
             arr[i] = arr[n - 1 - i];
             arr[n - 1 - i] = temp;

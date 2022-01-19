@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         boolean t = true;
         boolean f = false;
-        if (f) {
+        if (f ) {
             out = new PrintWriter("output.txt");
             sc = new Kioken("input.txt");
         } else {
@@ -17,82 +17,46 @@ public class Main {
         }
 
         int tt = 1;
-        tt = sc.nextInt();
-        while (tt-- > 0) {
-            solve();
-        }
+        solve();
+
         out.flush();
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
-        }
-
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }
-    }
     public static void solve() {
        int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
+       int m = sc.nextInt();
+       char[] s = sc.nextLine().toCharArray();
+       char[] t = sc.nextLine().toCharArray();
 
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
-       for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
-           }
+       int[] fromLeft = new int[m];
+       int[] fromRight = new int[m];
+
+       int i = 0, j = 0;
+       while(i < n && j < m){
+         if(s[i] == t[j]){
+           fromLeft[j] = i;
+           j++;
+         }
+         i++;
        }
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
-       }
+    i = n - 1;
+    j = m - 1;
+    while(i >= 0 && j >= 0){
+      if(s[i] == t[j]){
+        fromRight[j] = i;
+        j--;
+      }
+      i--;
     }
+
+    int max = Integer.MIN_VALUE;
+    for(i = 1; i < m; i++){
+      max = Math.max(max, (fromRight[i] - fromLeft[i-1]));
+    }
+    out.println(max);
+  }
 
     public static long gcd(long a,long b)
     {  while(b!=0)

@@ -25,73 +25,79 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
-        }
-
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }
-    }
     public static void solve() {
        int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
+       int[] arr = new int[n];
 
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
        for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
-           }else{
-               arr[3]++;
-           }
+         arr[i] = sc.nextInt();
        }
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
+       int[] ans = new int[n+2];
+       boolean[] visited = new boolean[n+1];
+       TreeSet<Integer> set = new TreeSet();
+       Arrays.sort(arr);
+
+       long sum = 0L;
+       for(int i = 0; i < n; i++){
+
+        if(arr[i] <= n && !visited[arr[i]]){
+         visited[arr[i]] = true;
+         continue;
+        }
+
+        int maxReminder = 0; 
+        if(arr[i]%2 == 0){
+            maxReminder = (arr[i]/2) - 1;
+         }else{
+           maxReminder = arr[i]/2;
+         }
+      
+         if(maxReminder > n){
+           ans[n+1]++;
+           set.add(n+1);
+         }else{
+           set.add(maxReminder);
+           ans[maxReminder]++;
+         }
        }
+
+       PriorityQueue<Integer> q = new PriorityQueue<>();
+       for(int x: set){
+         q.add(x);
+       }
+       for(int i = 1; i <= n; i++){
+         if(!visited[i]){
+           while(q.isEmpty() == false){
+             if(q.peek() < i){
+               q.poll();
+             }else{
+               break;
+             }
+           }
+           
+           if(q.isEmpty()){
+             out.println(-1);
+             return;
+           }
+
+           Integer val = q.peek();
+          //  out.println(val + " " + i + " " + Arrays.toString(ans) + " " + set);
+           if(val != null && ans[val] > 0){
+             ans[val]--;
+             sum++;
+             visited[i] = true;
+             if(ans[val] == 0){
+               q.poll();
+             }
+           }else{
+              out.println(-1);
+              return;
+           }
+         }
+       }
+
+       out.println(sum);
     }
 
     public static long gcd(long a,long b)

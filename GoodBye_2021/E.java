@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         boolean t = true;
         boolean f = false;
-        if (f) {
+        if (t) {
             out = new PrintWriter("output.txt");
             sc = new Kioken("input.txt");
         } else {
@@ -25,84 +25,102 @@ public class Main {
         out.close();
     }
 
-    // uu, ll, ul, lu
-    static boolean flag;
-    static int M = 1_000_000_007;
-    static int find(int[] arr, boolean turn){
-        if(arr[2] == 0 && arr[3] == 0){
-            return 0;
-        }
+    static char getChar(int a){
+      return (char)(a + 'a');
+    }
 
-        if(turn){
-            // uu,
-            if(arr[0] > 0){
-                int t1 = arr[3];
-                int t2 = arr[0];
-                arr[0] = 1 + t1;
-                arr[3] = t2 - 1;
-                int temp = arr[1];
-                arr[1] = arr[2];
-                arr[2] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }else{
-            // ul
-            if(arr[2] > 0){
-                int t1 = arr[2];
-                int t2 = arr[1];
-                arr[2] = 1 + t2;
-                arr[1] = t1 - 1;
-                int temp = arr[0];
-                arr[0] = arr[3];
-                arr[3] = temp;
-                return 1 + find(arr, !turn);
-            }else{
-                // flag = true;
-                return M;
-            }
-        }
+    static int getInt(char a){
+      return a - 'a';
+    }
+
+    static int find(int[] arr, int i, boolean[] isAva){
+       while(i < arr.length){
+         int index = arr[i];
+         if(index >= arr.length){
+           return arr.length;
+         }
+         if(isAva[index]){
+           return index;
+         }else{
+           i = arr[index];
+         }
+       }
+       return i;
     }
     public static void solve() {
        int n = sc.nextInt();
-       String a = sc.nextLine();
-       String b = sc.nextLine();
+       String s = sc.nextLine();
+       String t = sc.nextLine();
 
-       flag = false;
-       // uu, ll, ul, lu
-       int[] arr = new int[4];
-       for(int i = 0; i < n; i++){
-           if(a.charAt(i) == '1' && b.charAt(i) == '1'){
-               arr[0]++;
-           }else if(a.charAt(i) == '0' && b.charAt(i) == '0'){
-               arr[1]++;
-           }else if(a.charAt(i) == '1' && b.charAt(i) == '0'){
-               arr[2]++;
+       if(s.equals(t)){
+         out.println(-1);
+         return;
+       }
+      //  PriorityQueue<int[]> p = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+      boolean[] isAvailable = new boolean[n];
+      int[] getMin = new int[n];
+
+      Arrays.fill(isAvailable, true);
+       for(int i  = n - 1; i >= 0; i--){
+         if(i == n - 1){
+          getMin[i] = n;
+         }else{
+           if(getInt(s.charAt(i+1)) < getInt(s.charAt(i))){
+             getMin[i] = i+1;
            }else{
-               arr[3]++;
+             getMin[i] = getMin[i+1];
            }
+         }
+        // p.add(new int[]{s.charAt(i) - 'a', i});
        }
+       out.println(Arrays.toString(getMin));
 
-       int[] arr1 = Arrays.copyOf(arr, 4);
-       int ans = Math.min(find(arr, true), find(arr1, false));
-       if(ans >= M){
-           out.println(-1);
-       }else{
-           out.println(ans);
+       int i = 0, j = 0, cnt = 0;
+       while(j < n && i < n){
+          // while(p.size() > 0){
+          //   if(p.peek()[1] < i){
+          //     p.poll();
+          //   }
+          // }
+
+          if(!isAvailable[i]){
+            i++;
+            continue;
+          }
+          if(s.charAt(i) < t.charAt(j)){
+            break;
+          }else if(s.charAt(i) > t.charAt(j)){
+            int index = find(getMin, i, isAvailable);
+            if(index >= n){
+              out.println(-1);
+              return;
+            }
+            isAvailable[index] = false;
+            j++;
+            cnt++;
+          }else{
+           int index = find(getMin, i, isAvailable);
+          //  out.println(" => " + index);
+           if(index >= n){
+             i++;
+             j++;
+           }else{
+             if(s.charAt(index) >= t.charAt(index)){
+              isAvailable[index] = false;
+              j++;
+              cnt++;
+             }else{
+               i++;
+               j++;
+             }
+           }
+          }
+
+          out.println(" === > " + Arrays.toString(getMin) + " " + Arrays.toString(isAvailable) + " " + i + " " + j);
        }
+       out.println(cnt);
     }
 
-    public static long gcd(long a,long b)
-    {  while(b!=0)
-        {long rem=a%b;
-         a=b;
-         b=rem;
-        }
-        return a;
-    }
-    
     public static long leftShift(long a) {
         return (long) Math.pow(2, a);
     }
@@ -110,7 +128,7 @@ public class Main {
     public static void reverse(int[] arr) {
         Arrays.sort(arr);
         int n = arr.length;
-        for (int i = 0; i < arr.length/2; i++) {
+        for (int i = 0; i < arr.length; i++) {
             int temp = arr[i];
             arr[i] = arr[n - 1 - i];
             arr[n - 1 - i] = temp;
