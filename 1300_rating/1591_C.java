@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         boolean t = true;
         boolean f = false;
-        if (t) {
+        if (f) {
             out = new PrintWriter("output.txt");
             sc = new Kioken("input.txt");
         } else {
@@ -25,37 +25,21 @@ public class Main {
         out.close();
     }
 
-    public static long getVal(List<Integer> pp, boolean isLeft, int k){
-      long sum_pos = 0L;
-      long last = 0L;
-      for(int i = 0; i < pp.size(); i++){
-        int kk = k-1;
-        int prev = pp.get(i);
-        sum_pos += prev;
-        if(kk > 0){
-          i++;
+    public static long getVal(List<Integer> pp, int k){
+        
+        if(pp.size() == 0) return 0;
+        long sum = 0L;
+        for(int i = pp.size() - 1; i >= 0; i -= k){
+            sum += pp.get(i)*2;
         }
-        for(; i < pp.size() && kk > 0; i++, kk--){
-          sum_pos += (pp.get(i) - prev);
-          prev = pp.get(i);
-        }
-        sum_pos += prev;
-        out.println("sum ==> " + sum_pos + " " + pp);
-        if(i >= pp.size() - 1){
-          last = prev;
-        }
+        return sum;
       }
 
-      // out.println(" -->>last "  + last);
-      return sum_pos + ((isLeft == false) ? (-1*last) : 0);
-    }
     public static void solve() {
        int n = sc.nextInt();
        int k = sc.nextInt();
 
        int[] arr = new int[n];
-      //  HashMap<Integer,Integer> pos = new HashMap<>();
-      //  HashMap<Integer,Integer> neg = new HashMap<>();
 
        List<Integer> pp = new ArrayList<>();
        List<Integer> nn = new ArrayList<>();
@@ -63,30 +47,28 @@ public class Main {
          arr[i] = sc.nextInt();
          if(arr[i] >= 0){
            pp.add(arr[i]);
-          //  if(pos.containsKey(arr[i])){
-          //    pos.put(arr[i], pos.get(arr[i])+1);
-          //  }else{
-          //    pos.put(arr[i], 1);
-          //  }
          }else{
            nn.add(-1*arr[i]);
-          //  if(neg.containsKey(arr[i])){
-          //    neg.put(arr[i], neg.get(arr[i])+1);
-          //  }else{
-          //    neg.put(arr[i], 1);
-          //  }
          }
        }
 
        Collections.sort(pp);
        Collections.sort(nn);
 
-       long sum_pos = getVal(pp, nn.size() > 0 ? true: false, k);
-       long sum_ng = getVal(nn, false, k);
+       long sum_pos = getVal(pp, k);
+       long sum_ng = getVal(nn, k);
 
+       long max = 0L;
+       if(pp.size() > 0){
+           max = Math.max(max, pp.get(pp.size() - 1));
+       }
+
+       if(nn.size() > 0){
+           max = Math.max(max, nn.get(nn.size() - 1));
+       }
       //  out.println(" -- " + sum_pos);
-       out.println(sum_ng + sum_pos);
-      
+      long ans = sum_ng + sum_pos - max;
+       out.println(ans);
     }
 
     public static long gcd(long a,long b)
